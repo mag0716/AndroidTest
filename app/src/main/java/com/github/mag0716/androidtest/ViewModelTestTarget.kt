@@ -11,10 +11,8 @@ class ViewModelTestTarget : ViewModel() {
     private val _data = MutableLiveData<String>()
     val data: LiveData<String> = _data
 
-    fun loadData(id: Int) {
-        viewModelScope.launch {
-            val data = CoroutinesTestTarget().loadData(id)
-            _data.value = data
-        }
+    fun loadData(id: Int) = viewModelScope.launch {
+        val data = CoroutinesTestTarget().loadData(id)
+        _data.value = data
     }
 }
