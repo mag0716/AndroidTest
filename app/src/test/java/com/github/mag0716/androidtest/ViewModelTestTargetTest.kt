@@ -4,7 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.nhaarman.mockitokotlin2.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
@@ -30,12 +30,13 @@ class ViewModelTestTargetTest {
     lateinit var observer: Observer<String>
 
     @Test
-    fun loadData() = runBlocking {
-        val viewModelTestTarget = ViewModelTestTarget()
+    fun loadData() = coroutinesTestRule.testDispatcher.runBlockingTest {
+        val viewModelTestTarget = ViewModelTestTarget(coroutinesTestRule.testDispatcher)
         viewModelTestTarget.data.observeForever(observer)
 
-        // join で完了を待っている
-        viewModelTestTarget.loadData(1).join()
+        viewModelTestTarget.loadData(1)
+        // delay されている場合は advanceTimeBy で時間を進める
+        coroutinesTestRule.testDispatcher.advanceTimeBy(4000)
 
         verify(observer).onChanged("Data1")
     }
