@@ -4,16 +4,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
 @ExperimentalCoroutinesApi
 class CoroutinesTestTargetTest : CoroutineTest() {
 
-    @Test
-    fun loadTest() = testDispatcher.runBlockingTest {
+    @ParameterizedTest
+    @ValueSource(ints = [-1, 0, 1])
+    fun loadTest(id: Int) = testDispatcher.runBlockingTest {
         val target = CoroutinesTestTarget(testDispatcher)
-        val data = target.loadData(1)
+        val data = target.loadData(id)
         testDispatcher.advanceTimeBy(4000)
-        Assert.assertThat(data, `is`("Data1"))
+        Assert.assertThat(data, `is`("Data$id"))
     }
 }
